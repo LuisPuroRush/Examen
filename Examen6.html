@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen Semana 6</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #f0f8ff; padding: 20px; }
+        .question-container, .results-container { max-width: 700px; width: 100%; padding: 20px; border-radius: 10px; background: #ffffff; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); margin-bottom: 20px; }
+        .options { margin-top: 20px; text-align: left; }
+        .options div { margin: 5px 0; }
+        .btn { margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background-color: #45a049; }
+        .hidden { display: none; }
+        .results-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .results-table th, .results-table td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        .results-table th { background-color: #f2f2f2; font-weight: bold; }
+        .correct { color: green; font-weight: bold; }
+        .incorrect { color: red; font-weight: bold; }
+        .final-grade { font-size: 1.5em; font-weight: bold; color: #333; text-align: center; margin-top: 20px; }
+        .navigation { display: flex; justify-content: space-between; align-items: center; }
+    </style>
+</head>
+<body>
+    <div id="questionContainer" class="question-container"></div>
+
+    <script>
+        const allQuestions = [
+        { text: "¿Cuál es la función principal del Sistema de Nombres de Dominio (DNS)?", options: ["A) Enviar mensajes de correo electrónico entre servidores", "B) Resolver nombres de Internet en direcciones IP", "C) Proporcionar acceso remoto a servidores y dispositivos", "D) Configurar dispositivos automáticamente"], answer: "B" },
+            { text: "¿Qué protocolo se utiliza comúnmente para acceder a páginas web?", options: ["A) FTP", "B) SMTP", "C) HTTP", "D) IMAP"], answer: "C" },
+            { text: "¿Cuál de los siguientes protocolos es utilizado para recuperar correos electrónicos de un servidor remoto?", options: ["A) SMTP", "B) DNS", "C) IMAP", "D) FTP"], answer: "C" },
+            { text: "¿Para qué se utiliza el protocolo SSH?", options: ["A) Configurar dispositivos con direcciones IP", "B) Acceder a la interfaz de línea de comandos de forma segura", "C) Enviar correos electrónicos entre servidores", "D) Transferir archivos entre sistemas"], answer: "B" },
+            { text: "¿Cuál es el propósito del Protocolo de transferencia de archivos (FTP)?", options: ["A) Crear sesiones de terminales virtuales", "B) Transferir archivos de una computadora a otra", "C) Proporcionar servicios de VoIP", "D) Administrar bases de datos"], answer: "B" },
+            { text: "¿Qué protocolo permite que los dispositivos se configuren automáticamente para comunicarse en Internet?", options: ["A) DNS", "B) POP", "C) SMTP", "D) DHCP"], answer: "D" },
+            { text: "¿Cuál es la principal diferencia entre los protocolos TCP y UDP?", options: ["A) TCP garantiza la entrega de datos; UDP no", "B) TCP es utilizado para correos electrónicos; UDP para páginas web", "C) UDP cifra la conexión; TCP no", "D) TCP es más rápido que UDP"], answer: "A" },
+            { text: "¿Cuál de los siguientes no es un protocolo de correo electrónico?", options: ["A) SMTP", "B) POP3", "C) HTTP", "D) IMAP4"], answer: "C" },
+            { text: "¿Qué identifica un URL en una solicitud a un servidor?", options: ["A) Solo el nombre del recurso", "B) El protocolo, dominio y la ubicación del recurso", "C) La dirección IP del cliente", "D) Ninguna de las anteriores"], answer: "B" },
+            { text: "¿Qué servicio utiliza el puerto 80?", options: ["A) FTP", "B) IMAP", "C) HTTP", "D) Telnet"], answer: "C" },
+            { text: "¿Qué protocolo de correo electrónico se utiliza para enviar correos de un cliente a un servidor de correo?", options: ["A) SMTP", "B) IMAP", "C) POP3", "D) FTP"], answer: "A" },
+            { text: "¿Qué permite la telefonía IP (VoIP)?", options: ["A) Enviar archivos entre servidores", "B) Realizar llamadas telefónicas a través de Internet", "C) Crear sesiones de terminales virtuales", "D) Enviar mensajes de correo electrónico"], answer: "B" },
+            { text: "¿Qué protocolo proporciona una entrega de datos 'de mejor esfuerzo' sin confirmación de recepción?", options: ["A) TCP", "B) UDP", "C) HTTP", "D) DNS"], answer: "B" },
+            { text: "¿Qué tipo de aplicaciones utilizan IMAP y POP?", options: ["A) Aplicaciones de transferencia de archivos", "B) Clientes de correo electrónico", "C) Navegadores web", "D) Clientes de telefonía IP"], answer: "B" },
+            { text: "¿Qué puerto se utiliza generalmente para los servicios web con el protocolo HTTP?", options: ["A) 21", "B) 25", "C) 80", "D) 443"], answer: "C" },
+            { text: "¿Cuál es el propósito del protocolo DHCP en una red?", options: ["A) Proveer acceso remoto seguro", "B) Resolver nombres de dominio", "C) Asignar direcciones IP y configurar dispositivos automáticamente", "D) Transmitir llamadas telefónicas por Internet"], answer: "C" },
+            { text: "¿Qué protocolo permite la transferencia segura de archivos mediante la red informática mundial (WWW)?", options: ["A) HTTP", "B) HTTPS", "C) SMTP", "D) FTP"], answer: "B" },
+            { text: "¿Para qué se utiliza el protocolo Telnet?", options: ["A) Transferir archivos entre sistemas", "B) Crear un dispositivo virtual con acceso a la CLI del servidor", "C) Configurar direcciones IP automáticamente", "D) Administrar mensajes de correo electrónico"], answer: "B" },
+            { text: "¿Cuál es el rol de un cliente web en una conexión HTTP?", options: ["A) Recibir correo electrónico", "B) Solicitar servicios web", "C) Configurar direcciones IP", "D) Administrar archivos en el servidor"], answer: "B" },
+            { text: "¿Qué elemento identifica el servicio específico solicitado por un cliente en una conexión TCP?", options: ["A) Protocolo de origen", "B) Número de puerto de destino", "C) Dirección IP del servidor", "D) Número de segmento"], answer: "B" },
+            { text: "¿Cuál de los siguientes no es un dominio de alto nivel común?", options: ["A) .com", "B) .edu", "C) .ftp", "D) .net"], answer: "C" },
+            { text: "¿Para qué se utiliza el protocolo SSH?", options: ["A) Transferir archivos de manera interactiva", "B) Proporcionar acceso remoto seguro", "C) Gestionar bases de datos en línea", "D) Obtener direcciones de IP automáticamente"], answer: "B" },
+            { text: "¿Cuál es la función del protocolo SMTP?", options: ["A) Transferir archivos de manera interactiva", "B) Recibir correos en el cliente de correo", "C) Proporcionar acceso remoto seguro", "D) Enviar correos entre servidores"], answer: "D" },
+            { text: "¿Qué es una dirección IP?", options: ["A) Un identificador único de cada dispositivo en la red", "B) Un nombre de dominio de un sitio web", "C) Una dirección de correo electrónico", "D) Una URL de un recurso"], answer: "A" },
+            { text: "¿Qué capa del modelo TCP/IP permite la comunicación entre aplicaciones?", options: ["A) Aplicación", "B) Red", "C) Transporte", "D) Internetwork"], answer: "A" },
+            // Incluye las preguntas restantes hasta alcanzar un total de 60
+        ];
+
+        // Selecciona 10 preguntas aleatorias
+        const questions = allQuestions.sort(() => Math.random() - 0.5).slice(0, 10);
+
+        let currentQuestion = 0;
+        const questionContainer = document.getElementById("questionContainer");
+
+        function loadQuestion() {
+            if (currentQuestion < questions.length) {
+                const q = questions[currentQuestion];
+                const isLastQuestion = currentQuestion === questions.length - 1;
+                questionContainer.innerHTML = `
+                    <h2>Pregunta ${currentQuestion + 1}</h2>
+                    <p>${q.text}</p>
+                    <div class="options">
+                        ${q.options.map((option, index) => `<div><label><input type="radio" name="question${currentQuestion}" value="${option.charAt(0)}"> ${option}</label></div>`).join('')}
+                    </div>
+                    <button class="btn" onclick="${isLastQuestion ? 'submitQuiz()' : 'nextQuestion()'}">${isLastQuestion ? 'Enviar' : 'Siguiente'}</button>
+                `;
+                questionContainer.classList.remove("hidden");
+            }
+        }
+
+        function nextQuestion() {
+            const selected = document.querySelector(`input[name="question${currentQuestion}"]:checked`);
+            if (!selected) {
+                alert("Por favor, selecciona una respuesta.");
+                return;
+            }
+            questions[currentQuestion].userAnswer = selected.value;
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        function submitQuiz() {
+            const selected = document.querySelector(`input[name="question${currentQuestion}"]:checked`);
+            if (!selected) {
+                alert("Por favor, selecciona una respuesta.");
+                return;
+            }
+            questions[currentQuestion].userAnswer = selected.value;
+            showResults();
+        }
+
+        function showResults() {
+            let score = 0;
+            questions.forEach(q => { if (q.userAnswer === q.answer) score++; });
+            const grade = (score / questions.length) * 10; // Nota de 1 a 10
+
+            questionContainer.innerHTML = `
+                <div class="results-container">
+                    <h2>Resultados del Examen</h2>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Pregunta</th>
+                                <th>Tu Respuesta</th>
+                                <th>Respuesta Correcta</th>
+                                <th>Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${questions.map((q, index) => `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${q.userAnswer || "No respondida"}</td>
+                                    <td>${q.answer}</td>
+                                    <td class="${q.userAnswer === q.answer ? 'correct' : 'incorrect'}">
+                                        ${q.userAnswer === q.answer ? "✅ Correcto" : "❌ Incorrecto"}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="final-grade">Calificación final: ${grade.toFixed(1)} / 10</div>
+                    <button class="btn" onclick="window.location.reload()">Volver a intentar</button>
+                </div>
+            `;
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

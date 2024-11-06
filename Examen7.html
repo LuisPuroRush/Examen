@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen Semana 7</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #f0f8ff; padding: 20px; }
+        .question-container, .results-container { max-width: 700px; width: 100%; padding: 20px; border-radius: 10px; background: #ffffff; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); margin-bottom: 20px; }
+        .btn { margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background-color: #45a049; }
+        .hidden { display: none; }
+        .results-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .results-table th, .results-table td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        .results-table th { background-color: #f2f2f2; font-weight: bold; }
+        .correct { color: green; font-weight: bold; }
+        .incorrect { color: red; font-weight: bold; }
+        .final-grade { font-size: 1.5em; font-weight: bold; color: #333; text-align: center; margin-top: 20px; }
+        .navigation { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div id="questionContainer" class="question-container"></div>
+
+    <script>
+        const allQuestions = [
+  { text: "¿Cuál es el objetivo de la sesión mencionada en el documento?", answer: "Configurar una central IP con teléfonos IP reales" },
+  { text: "¿Qué proporciona el switch al teléfono IP según el documento?", answer: "Conectividad a la red y alimentación a 48V DC a través de un único cable" },
+  { text: "¿Qué es un gateway en una infraestructura telefónica?", answer: "Un dispositivo que permite la comunicación entre redes de voz y datos" },
+  { text: "¿Cuáles son los principales criterios para seleccionar un gateway?", answer: "Densidad y tipo de puertos de voz, protocolo de señalización, y soporte de interfaces WAN y QoS" },
+  { text: "¿Qué es la señalización H.323?", answer: "Un protocolo para el establecimiento de comunicaciones en redes IP" },
+  { text: "¿Cuántos teléfonos soporta un cluster de Cisco CallManager?", answer: "Hasta 30.000 teléfonos" },
+  { text: "¿Qué es el procesamiento centralizado en un sistema de telefonía IP?", answer: "El Call Manager se encuentra en las oficinas centrales, y los recursos DSP pueden estar centralizados o distribuidos" },
+  { text: "¿Qué permite el control de admisión de llamadas en oficinas remotas?", answer: "Limitar el número de llamadas por oficina remota" },
+  { text: "¿Qué es el modo de operación SRST?", answer: "Es un modo de operación que requiere una configuración mínima y ofrece un subconjunto de servicios como DID, DOD, Call Hold, Transfer y Caller ID" },
+  { text: "¿Cuáles son los servicios más comunes que proveen los teléfonos IP?", answer: "Llamadas telefónicas, acceso a Internet, control de inventario, entre otros" },
+  { text: "¿Qué aplicación puede tener un teléfono IP en el sector bancario?", answer: "Los agentes pueden recuperar la información del cliente en el visor del IP Phone antes de responder la llamada" },
+  { text: "¿Cómo se utiliza un teléfono IP en el sector salud?", answer: "Los médicos pueden chequear el perfil del paciente y el calendario de pruebas desde el IP Phone en cada sala" },
+  { text: "¿Qué es RTP?", answer: "Un protocolo que especifica una estructura de paquete para transportar datos de audio, video y otros medios" },
+  { text: "¿Qué protocolos utiliza RTP para encapsular sus paquetes?", answer: "Generalmente se encapsula en datagramas UDP" },
+  { text: "¿Qué identificador permite el seguimiento de flujos RTP?", answer: "El campo SSRC (Synchronization Source)" },
+  { text: "¿Qué servicio proporciona RTCP?", answer: "Proporciona informes de estadísticas sobre la transmisión de paquetes y la calidad de la transmisión" },
+  { text: "¿Qué se sincroniza utilizando RTCP en una videoconferencia?", answer: "La reproducción de audio y video" },
+  { text: "¿Qué porcentaje del ancho de banda se reserva para el tráfico RTCP en una sesión?", answer: "Hasta el 5% del ancho de banda de la sesión" },
+  { text: "¿Qué protocolo se utiliza para iniciar, modificar y finalizar sesiones multimedia?", answer: "SIP (Session Initiation Protocol)" },
+  { text: "¿Cuál es la principal diferencia entre H.323 y SIP?", answer: "H.323 es un conjunto completo de protocolos para conferencias multimedia, mientras que SIP se centra en la señalización y es más simple" },
+  { text: "¿Qué campo en un paquete RTP refleja el instante de muestreo del primer byte?", answer: "El campo de marca de tiempo (timestamp)" },
+  { text: "¿Qué es un paquete de control RTCP?", answer: "Un paquete que contiene informes de transmisores y receptores sobre la calidad de la transmisión" },
+  { text: "¿Cómo se limita el tráfico RTCP conforme aumenta el número de participantes?", answer: "Cada participante reduce su tráfico RTCP proporcionalmente al número de participantes" },
+  { text: "¿Qué identificador utiliza SIP para las sesiones?", answer: "Direcciones de correo electrónico o nombres en lugar de números telefónicos" },
+  { text: "¿Qué sucede si el dispositivo de Bob no acepta el codificador propuesto en una llamada SIP?", answer: "Responde con un mensaje 'Not Acceptable' y lista de codificadores aceptados" },
+  { text: "¿Qué número de puerto utiliza SIP por defecto?", answer: "El puerto 5060" },
+  { text: "¿Cómo se realiza el registro de un cliente SIP?", answer: "El cliente envía un mensaje REGISTER al servidor de registro SIP" },
+  { text: "¿Qué servicio proporciona un servidor proxy SIP?", answer: "Rutea los mensajes SIP entre llamador y llamado" },
+  { text: "¿Qué protocolo utiliza SIP para el envío de medios como audio y video?", answer: "RTP" },
+  { text: "¿Cómo se sincronizan los flujos de audio y video en una sesión RTP?", answer: "Utilizando las marcas de tiempo en los paquetes RTP" },
+  { text: "¿Qué campo de un paquete RTP indica el tipo de carga útil (payload)?", answer: "El campo de tipo de carga" },
+  { text: "¿Qué función tiene el número de secuencia en un paquete RTP?", answer: "Permite detectar la pérdida de paquetes y restaurar el orden de los mismos" },
+  { text: "¿Qué función tiene el campo SSRC en un paquete RTP?", answer: "Identifica la fuente del flujo RTP" },
+  { text: "¿Qué protocolo permite la negociación de codificadores entre llamador y llamado en SIP?", answer: "SIP" },
+  { text: "¿Qué mensaje SIP se utiliza para establecer una llamada?", answer: "INVITE" },
+  { text: "¿Qué es un paquete de reporte RTCP?", answer: "Un paquete que contiene estadísticas como el número de paquetes enviados y perdidos" },
+  { text: "¿Cómo sincroniza RTCP los flujos de una sesión RTP?", answer: "Proporcionando marcas de tiempo del paquete RTP y del instante real en que fue generado" },
+  { text: "¿Qué mecanismo utiliza SIP para acordar el tipo de medio entre llamador y llamado?", answer: "La negociación de codificación" },
+  { text: "¿Qué protocolo se utiliza para enviar el control de flujo en videoconferencias?", answer: "RTCP" },
+  { text: "¿Qué estructura de red permite el uso de SIP para videoconferencias y llamadas?", answer: "Una estructura basada en IP con soporte de SIP" },
+  { text: "¿Cómo se determina la dirección IP de un usuario SIP?", answer: "A través del servidor proxy SIP y el servidor de registro" },
+  { text: "¿Qué servicio de red utiliza el protocolo RTP para transportar medios en tiempo real?", answer: "Videoconferencias y llamadas de voz IP" },
+  { text: "¿Qué codificadores son soportados en paquetes RTP según el tipo de carga 0?", answer: "PCM mu-law, 64 kbps" },
+  { text: "¿Qué ocurre si dos aplicaciones de telefonía en Internet utilizan RTP?", answer: "Pueden interoperar y trabajar juntas" },
+  { text: "¿Qué protocolo de control se utiliza junto con RTP para gestionar la calidad de la transmisión?", answer: "RTCP" },
+  { text: "¿Qué información contiene un mensaje REGISTER en SIP?", answer: "Dirección IP, nombre de usuario y tiempo de expiración" },
+  { text: "¿Cuál es el propósito del servidor de registro en SIP?", answer: "Almacenar la dirección IP actual del usuario SIP" },
+  { text: "¿Qué diferencia tiene SIP respecto a H.323 en cuanto a su diseño?", answer: "SIP está diseñado para ser simple y basado en la web, mientras que H.323 está más centrado en la telefonía" },
+  { text: "¿Qué protocolo asegura que los paquetes RTP lleguen a destino a tiempo?", answer: "Ninguno, RTP no provee mecanismos de calidad de servicio" },
+  { text: "¿Qué es la sincronización de labios en RTP?", answer: "La alineación entre el flujo de audio y el de video en una videoconferencia" },
+  { text: "¿Cómo se gestiona el ancho de banda en una sesión RTP con RTCP?", answer: "RTCP limita su tráfico al 5% del ancho de banda total de la sesión" },
+  { text: "¿Qué protocolo provee un mecanismo para terminar una llamada en SIP?", answer: "SIP" },
+  { text: "¿Cómo se encapsulan los paquetes RTP?", answer: "Típicamente en datagramas UDP" },
+  { text: "¿Cómo permite SIP la transferencia de llamadas?", answer: "Utilizando mensajes SIP que gestionan la sesión" },
+  { text: "¿Qué permite el campo de marcas de tiempo en RTP?", answer: "Sincronizar la reproducción de medios" },
+  { text: "¿Qué protocolos están involucrados en la señalización y transporte de medios en SIP?", answer: "SIP para señalización y RTP para transporte de medios" },
+  { text: "¿Cómo SIP determina la IP del usuario llamado?", answer: "A través del servidor proxy SIP" },
+  { text: "¿Qué mecanismo utiliza SIP para rechazar una llamada?", answer: "Responde con un mensaje de rechazo como 'ocupado' o 'lejos'" },
+  { text: "¿Qué indica el campo 'Call-ID' en un mensaje SIP?", answer: "Identifica de manera única una llamada" },
+  { text: "¿Qué función cumple el número de puerto en una sesión SIP?", answer: "Especifica la ruta de los mensajes SIP y la dirección del cliente" },
+  { text: "¿Qué campo se utiliza en un mensaje SIP para especificar la dirección IP?", answer: "El campo 'Via'" },
+  { text: "¿Cómo SIP gestiona la movilidad del usuario?", answer: "Permitiendo que el usuario se registre desde diferentes dispositivos y ubicaciones" },
+  { text: "¿Qué servicio provee el servidor proxy SIP?", answer: "Rutea mensajes SIP y gestiona las sesiones entre llamadores y llamados" },
+  { text: "¿Qué campo de un paquete RTCP indica el jitter promedio entre llegadas de paquetes?", answer: "Paquetes reportados por receptores incluyen el jitter promedio" },
+  { text: "¿Qué función cumple el Real-Time Control Protocol (RTCP)?", answer: "Transmitir paquetes de control para medir la calidad del flujo de medios" },
+  { text: "¿Qué servicio proporciona RTCP durante una videoconferencia?", answer: "Sincronización de flujos de audio y video" },
+  { text: "¿Qué protocolo gestiona la calidad del servicio en una sesión RTP?", answer: "RTCP" },
+  { text: "¿Cómo SIP establece una llamada telefónica?", answer: "A través de un mensaje INVITE y la negociación de medios entre los usuarios" },
+  { text: "¿Qué se encapsula en un paquete RTP para transportar medios?", answer: "Datos de audio o video junto con el encabezado RTP" },
+  { text: "¿Cómo SIP maneja la ubicación de un usuario cuando cambia de dispositivo?", answer: "A través de servidores proxy y registro SIP" },
+  { text: "¿Qué función tiene el campo 'Via' en un mensaje SIP?", answer: "Especificar el protocolo y dirección IP del remitente" },
+  { text: "¿Qué campo de un paquete RTP permite cambiar la codificación durante una conferencia?", answer: "El campo de tipo de carga" },
+  { text: "¿Qué rol cumple RTSP en la transmisión de medios?", answer: "Controlar la reproducción de medios almacenados" },
+  { text: "¿Cómo SIP gestiona las llamadas entrantes cuando el usuario está ocupado?", answer: "Envía las llamadas al buzón de voz o a otro destino predeterminado" },
+  { text: "¿Qué permite SIP en cuanto a la administración de llamadas durante una sesión?", answer: "Agregar nuevo medio, cambiar codificación, transferir o poner en espera llamadas" }
+]
+;
+
+        const questions = allQuestions.sort(() => Math.random() - 0.5).slice(0, 20); // ahora selecciona 20 preguntas
+        let currentQuestion = 0;
+        const questionContainer = document.getElementById("questionContainer");
+
+        function loadQuestion() {
+            if (currentQuestion < questions.length) {
+                const q = questions[currentQuestion];
+                questionContainer.innerHTML = `
+                    <h2>Pregunta ${currentQuestion + 1}</h2>
+                    <p>${q.text}</p>
+                    <input type="text" id="userAnswer" placeholder="Escribe tu respuesta aquí">
+                    <button class="btn" onclick="nextQuestion()">Siguiente</button>
+                `;
+                questionContainer.classList.remove("hidden");
+            }
+        }
+
+        function nextQuestion() {
+            const userAnswer = document.getElementById("userAnswer").value.trim().toLowerCase();
+            if (userAnswer === "") {
+                alert("Por favor, escribe una respuesta.");
+                return;
+            }
+            questions[currentQuestion].userAnswer = userAnswer;
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            let score = 0;
+            questions.forEach(q => { if (q.userAnswer === q.answer.toLowerCase()) score++; });
+            const grade = (score / questions.length) * 10;
+
+            questionContainer.innerHTML = `
+                <div class="results-container">
+                    <h2>Resultados del Examen</h2>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Pregunta</th>
+                                <th>Tu Respuesta</th>
+                                <th>Respuesta Correcta</th>
+                                <th>Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${questions.map(q => `
+                                <tr>
+                                    <td>${q.text}</td>
+                                    <td>${q.userAnswer || "No respondida"}</td>
+                                    <td>${q.answer}</td>
+                                    <td class="${q.userAnswer === q.answer.toLowerCase() ? 'correct' : 'incorrect'}">
+                                        ${q.userAnswer === q.answer.toLowerCase() ? "✅ Correcto" : "❌ Incorrecto"}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="final-grade">Calificación final: ${grade.toFixed(1)} / 10</div>
+                    <div class="navigation">
+                        <button class="btn" onclick="window.location.reload()">Volver a intentar</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Detect tab visibility change
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) showResults();
+        });
+
+        // Disable Print Screen and other capture shortcuts
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "PrintScreen" || (event.ctrlKey && event.shiftKey && (event.key === "s" || event.key === "i"))) {
+                alert("Capturas de pantalla están deshabilitadas.");
+                event.preventDefault();
+            }
+        });
+
+        loadQuestion();
+    </script>
+</body>
+</html>

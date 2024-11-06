@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen Semana 8</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #f0f8ff; padding: 20px; }
+        .question-container, .results-container { max-width: 700px; width: 100%; padding: 20px; border-radius: 10px; background: #ffffff; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); margin-bottom: 20px; }
+        .btn { margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background-color: #45a049; }
+        .hidden { display: none; }
+        .results-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .results-table th, .results-table td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        .results-table th { background-color: #f2f2f2; font-weight: bold; }
+        .correct { color: green; font-weight: bold; }
+        .incorrect { color: red; font-weight: bold; }
+        .final-grade { font-size: 1.5em; font-weight: bold; color: #333; text-align: center; margin-top: 20px; }
+        .navigation { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div id="questionContainer" class="question-container"></div>
+
+    <script>
+        const allQuestions = [
+  { text: "¿Cuál es el objetivo principal de la sesión?", answer: "Configurar servicios adicionales de Elastix como mensajería corporativa y videoconferencia" },
+  { text: "¿Qué es una PBX?", answer: "Un equipo privado que permite gestionar llamadas telefónicas internas en una empresa" },
+  { text: "¿Qué diferencia hay entre una PBX y una IP-PBX?", answer: "La IP-PBX trabaja con el protocolo IP y utiliza la infraestructura de comunicaciones de datos (LAN y WAN)" },
+  { text: "¿Cuál es una de las principales ventajas de un sistema IP-PBX?", answer: "El costo reducido, además de ahorro en mantenimiento y soporte" },
+  { text: "¿Qué se necesita para usar y administrar un sistema telefónico VoIP?", answer: "Una conexión activa a Internet" },
+  { text: "¿Qué funcionalidades avanzadas ofrece VoIP que no eran posibles con PBX tradicionales?", answer: "Videoconferencia integrada, mensajería instantánea, contestador automático y llamadas internacionales de bajo costo" },
+  { text: "¿Qué es un softphone en un sistema VoIP?", answer: "Un software que gestiona cuentas SIP como Extensiones, Contraseña y Dominio" },
+  { text: "¿Qué es Elastix?", answer: "Una distribución de Linux que integra herramientas para PBX basadas en Asterisk con una interfaz fácil de usar" },
+  { text: "¿Qué versión de Elastix se menciona en el documento?", answer: "La versión 4.0 basada en CentOS 7" },
+  { text: "¿Quién desarrolló Elastix?", answer: "La empresa ecuatoriana Palo Santo Solutions en 2006" },
+  { text: "¿Cuál fue la función inicial de Elastix?", answer: "Una interfaz para mostrar el registro de llamadas en Asterisk" },
+  { text: "¿Por qué se decidió desarrollar una solución estándar para instalar Asterisk?", answer: "Para facilitar la implementación de telefonía IP en los clientes de Asterisk" },
+  { text: "¿Cuándo fue lanzada la primera versión de Elastix bajo la licencia GPLv2?", answer: "En 2007" },
+  { text: "¿Cuántas descargas ha alcanzado Elastix?", answer: "Más de un millón de descargas" },
+  { text: "¿Qué funcionalidades incluye Elastix además de PBX VoIP?", answer: "Servidor de Fax, Servidor de Email, Videoconferencia y Mensajería Instantánea" },
+  { text: "¿Qué hardware es compatible con Elastix?", answer: "Elastix es compatible con una gran variedad de hardware de telefonía, la lista completa está disponible en su sitio web" },
+  { text: "¿Qué es un addon de Elastix?", answer: "Un paquete de software certificado por Elastix disponible en formato RPM a través de un repositorio oficial" },
+  { text: "¿Qué addon de Elastix permite observar la actividad de una IP-PBX en detalle?", answer: "SmartFink" },
+  { text: "¿Qué addon de Elastix permite configurar un servidor VPN usando OpenVPN?", answer: "MyVPN" },
+  { text: "¿Qué addon de Elastix protege el servidor contra ataques de fuerza bruta?", answer: "Anti-Hacker" },
+  { text: "¿Qué herramienta en línea ofrece información y manuales sobre Elastix?", answer: "Elastix Without Tears" },
+  { text: "¿Qué protocolo utiliza una central IP para manejar llamadas internas y externas?", answer: "El protocolo IP" },
+  { text: "¿Qué ventajas ofrece una solución VoIP a empresas pequeñas y grandes?", answer: "Ahorros en costos, funcionalidad avanzada, y llamadas internacionales de bajo costo" },
+  { text: "¿Qué servicios adicionales pueden integrarse en una central IP-PBX?", answer: "Videoconferencia, mensajería instantánea y contestador automático" },
+  { text: "¿Qué permite el uso de softphones en una red corporativa?", answer: "Los softphones permiten gestionar cuentas SIP y conectar a la red VoIP" },
+  { text: "¿Qué papel juega el router en un sistema VoIP?", answer: "Conecta a Internet y permite la conexión a extensiones remotas" },
+  { text: "¿Cuál es el núcleo del sistema telefónico VoIP?", answer: "La IP-PBX" },
+  { text: "¿Qué elementos incluye una red corporativa que usa un sistema VoIP?", answer: "Clientes SIP como softphones y teléfonos IP conectados a la IP-PBX" },
+  { text: "¿Qué funcionalidad avanzada permite la integración de VoIP con el Internet?", answer: "Llamadas internacionales a bajo costo y funcionalidades avanzadas de contacto" },
+  { text: "¿Qué beneficio ofrece la solución Elastix en cuanto a la licencia de software?", answer: "Elastix es una solución de código abierto bajo la licencia GPLv2" },
+  { text: "¿Cómo se instalan los addons en Elastix?", answer: "De manera fácil e intuitiva desde el menú 'Addons' de la consola web de Elastix" },
+  { text: "¿Qué permite observar el addon SmartFink en una IP-PBX?", answer: "Duración de llamadas, quién está hablando y otras estadísticas en tiempo real" },
+  { text: "¿Qué amenaza previene el addon Anti-Hacker de Elastix?", answer: "Ataques de fuerza bruta y otros tipos de hackeos a los servicios principales del servidor" },
+  { text: "¿Qué herramienta puede utilizarse para crear un servidor VPN en Elastix?", answer: "MyVPN" },
+  { text: "¿Qué funcionalidad ofrece Elastix a empresas que necesitan videoconferencia?", answer: "Videoconferencia integrada en el sistema IP-PBX" },
+  { text: "¿Cómo pueden las empresas aprovechar la mensajería instantánea en Elastix?", answer: "Usando la mensajería instantánea para comunicaciones internas dentro de la red empresarial" },
+  { text: "¿Qué tipo de empresas pueden beneficiarse de una solución VoIP como Elastix?", answer: "Tanto grandes como pequeñas empresas pueden beneficiarse" },
+  { text: "¿Qué protocolo subyace en la infraestructura de comunicaciones de Elastix?", answer: "El protocolo IP" },
+  { text: "¿Cómo ayuda Elastix a reducir costos operativos en una empresa?", answer: "A través de una menor necesidad de hardware y costos reducidos de mantenimiento y soporte" },
+  { text: "¿Qué solución permite a los teléfonos IP y softphones conectarse con la IP-PBX?", answer: "La red corporativa o LAN" },
+  { text: "¿Qué funciones incluye la IP-PBX de Elastix además de las llamadas?", answer: "Videoconferencia, correo electrónico, mensajería instantánea y servidor de fax" },
+  { text: "¿Qué características hacen de Elastix una solución atractiva para la telefonía IP?", answer: "Facilidad de uso, código abierto, y compatibilidad con una amplia gama de hardware" },
+  { text: "¿Qué módulo de Elastix protege contra ataques a la interfaz web y SSH?", answer: "Anti-Hacker" },
+  { text: "¿Cómo los teléfonos IP y softphones interactúan con la IP-PBX en una red corporativa?", answer: "A través de la infraestructura de comunicaciones de datos, como LAN y WAN" },
+  { text: "¿Qué hace Elastix un paquete de software excepcional para la telefonía de código abierto?", answer: "Integra herramientas basadas en Asterisk y agrega su propio conjunto de funcionalidades" },
+  { text: "¿Qué función tenía originalmente Elastix antes de convertirse en una distribución completa?", answer: "Mostrar el registro de llamadas en Asterisk" },
+  { text: "¿Qué empresa lanzó Elastix y cuándo?", answer: "Palo Santo Solutions en 2006" },
+  { text: "¿Cómo ha crecido la comunidad de Elastix desde su lanzamiento?", answer: "Ha incrementado el número de descargas y usuarios alrededor del mundo" },
+  { text: "¿Qué licencia sigue Elastix para su distribución?", answer: "Licencia GPLv2" },
+  { text: "¿Qué permite la tecnología VoIP en comparación con los sistemas PBX tradicionales?", answer: "Funcionalidades avanzadas como videoconferencia y llamadas internacionales de bajo costo" },
+  { text: "¿Qué versión de Linux usa la distribución de Elastix?", answer: "CentOS 7" },
+  { text: "¿Cómo facilita Elastix la administración de la telefonía IP en las empresas?", answer: "A través de una interfaz gráfica fácil de usar y una integración con herramientas avanzadas" },
+  { text: "¿Qué protocolo es necesario para que los softphones se conecten a la IP-PBX?", answer: "Protocolo SIP" },
+  { text: "¿Qué tipo de hardware puede certificarse para trabajar con Elastix?", answer: "Diversos equipos de telefonía que cumplan con los requisitos de compatibilidad" },
+  { text: "¿Cómo un addon de Elastix puede proteger la infraestructura telefónica de una empresa?", answer: "Bloqueando direcciones IP sospechosas y notificando sobre intentos de ataque" },
+  { text: "¿Qué función clave tiene el protocolo SIP en una red de telefonía IP?", answer: "Permitir la señalización y control de sesiones de comunicación" },
+  { text: "¿Qué empresa puede desarrollar addons para Elastix?", answer: "Cualquier empresa que pase el proceso de certificación de Elastix" },
+  { text: "¿Cómo puede una empresa configurar una VPN en su red telefónica usando Elastix?", answer: "Instalando el addon MyVPN que facilita la configuración de servidores VPN" },
+  { text: "¿Qué permite el addon SmartFink en términos de análisis de llamadas?", answer: "Monitoreo detallado de la actividad de llamadas y colas en la IP-PBX" },
+  { text: "¿Cómo ayuda Elastix a reducir los costos de llamadas internacionales?", answer: "Aprovechando la tecnología VoIP para ofrecer tarifas más bajas en llamadas internacionales" },
+  { text: "¿Qué herramientas integra Elastix para la gestión de llamadas y comunicaciones empresariales?", answer: "VoIP PBX, servidor de fax, correo electrónico, videoconferencia y mensajería instantánea" },
+  { text: "¿Qué permite la implementación de IP-PBX en una red corporativa?", answer: "Realizar y gestionar llamadas a través de la infraestructura IP existente" },
+  { text: "¿Qué versión de Elastix se menciona en el documento y en qué está basada?", answer: "Versión 4.0 basada en CentOS 7" },
+  { text: "¿Qué es la red corporativa en un sistema de telefonía IP?", answer: "La red local de la empresa por la que los teléfonos IP y softphones se conectan al PBX" },
+  { text: "¿Cómo se instala un addon en Elastix?", answer: "Desde el menú de 'Addons' en la consola web de Elastix" },
+  { text: "¿Qué funcionalidad de seguridad avanzada ofrece Elastix contra ataques de fuerza bruta?", answer: "El addon Anti-Hacker, que detecta y bloquea direcciones IP sospechosas" },
+  { text: "¿Qué permite el uso de softphones en una solución VoIP?", answer: "Acceder a las funcionalidades de la IP-PBX desde un dispositivo remoto" },
+  { text: "¿Qué ofrece el addon MyVPN en términos de conectividad?", answer: "La creación rápida de un servidor VPN para conexiones seguras" },
+  { text: "¿Qué es VoIP y cómo se relaciona con IP-PBX?", answer: "VoIP es la transmisión de voz sobre IP, y una IP-PBX gestiona estas comunicaciones en una empresa" },
+  { text: "¿Qué solución de Elastix ayuda a las empresas a gestionar las amenazas de seguridad?", answer: "El addon Anti-Hacker, que protege contra intentos de hackeo" },
+  { text: "¿Qué funcionalidades permiten los addons comerciales de Elastix?", answer: "Ofrecer servicios adicionales como monitoreo, seguridad y conectividad VPN" },
+  { text: "¿Qué tipo de software es Elastix?", answer: "Un software de código abierto para la telefonía IP basado en Asterisk" },
+  { text: "¿Cómo una empresa puede beneficiarse de usar Elastix en lugar de un sistema PBX tradicional?", answer: "Ahorrando en costos y obteniendo funcionalidades avanzadas que no ofrece el PBX tradicional" }
+]
+;
+
+        const questions = allQuestions.sort(() => Math.random() - 0.5).slice(0, 20); // ahora selecciona 20 preguntas
+        let currentQuestion = 0;
+        const questionContainer = document.getElementById("questionContainer");
+
+        function loadQuestion() {
+            if (currentQuestion < questions.length) {
+                const q = questions[currentQuestion];
+                questionContainer.innerHTML = `
+                    <h2>Pregunta ${currentQuestion + 1}</h2>
+                    <p>${q.text}</p>
+                    <input type="text" id="userAnswer" placeholder="Escribe tu respuesta aquí">
+                    <button class="btn" onclick="nextQuestion()">Siguiente</button>
+                `;
+                questionContainer.classList.remove("hidden");
+            }
+        }
+
+        function nextQuestion() {
+            const userAnswer = document.getElementById("userAnswer").value.trim().toLowerCase();
+            if (userAnswer === "") {
+                alert("Por favor, escribe una respuesta.");
+                return;
+            }
+            questions[currentQuestion].userAnswer = userAnswer;
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            let score = 0;
+            questions.forEach(q => { if (q.userAnswer === q.answer.toLowerCase()) score++; });
+            const grade = (score / questions.length) * 10;
+
+            questionContainer.innerHTML = `
+                <div class="results-container">
+                    <h2>Resultados del Examen</h2>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Pregunta</th>
+                                <th>Tu Respuesta</th>
+                                <th>Respuesta Correcta</th>
+                                <th>Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${questions.map(q => `
+                                <tr>
+                                    <td>${q.text}</td>
+                                    <td>${q.userAnswer || "No respondida"}</td>
+                                    <td>${q.answer}</td>
+                                    <td class="${q.userAnswer === q.answer.toLowerCase() ? 'correct' : 'incorrect'}">
+                                        ${q.userAnswer === q.answer.toLowerCase() ? "✅ Correcto" : "❌ Incorrecto"}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="final-grade">Calificación final: ${grade.toFixed(1)} / 10</div>
+                    <div class="navigation">
+                        <button class="btn" onclick="window.location.reload()">Volver a intentar</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Detect tab visibility change
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) showResults();
+        });
+
+        // Disable Print Screen and other capture shortcuts
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "PrintScreen" || (event.ctrlKey && event.shiftKey && (event.key === "s" || event.key === "i"))) {
+                alert("Capturas de pantalla están deshabilitadas.");
+                event.preventDefault();
+            }
+        });
+
+        loadQuestion();
+    </script>
+</body>
+</html>

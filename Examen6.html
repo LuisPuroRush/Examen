@@ -121,6 +121,19 @@
             `;
         }
 
+        // Detect tab visibility change
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) showResults();
+        });
+
+        // Disable Print Screen and other capture shortcuts
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "PrintScreen" || (event.ctrlKey && event.shiftKey && (event.key === "s" || event.key === "i"))) {
+                alert("Capturas de pantalla están deshabilitadas.");
+                event.preventDefault();
+            }
+        });
+
         loadQuestion();
     </script>
 </body>

@@ -3,100 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuestionario de Histología: Texto y Atlas</title>
+    <title>Cuestionario de Histología: Texto y Atlas (Ross)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #48c6ef, #6f86d6);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #f0f4f8;
-            margin: 0;
-            padding: 20px;
+            padding: 40px;
+            animation: fadeInUp 1.2s ease-out;
         }
         h1 {
-            color: #2c3e50;
+            color: #ffffff;
+            font-size: 2.8em;
+            margin-bottom: 30px;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
         #results-table, #quiz-container, #score-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             width: 100%;
-            max-width: 600px;
+            max-width: 800px;
+            margin-bottom: 40px;
+        }
+        #results-table h2 {
+            color: #2d3436;
             margin-bottom: 20px;
+            font-size: 1.8em;
         }
         #results-table table {
             width: 100%;
             border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
         }
         #results-table th, #results-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            padding: 15px;
             text-align: center;
+            border: 1px solid #e0e0e0;
         }
         #results-table th {
-            background-color: #3498db;
+            background: #6c5ce7;
             color: white;
+            font-weight: 600;
+        }
+        #results-table td {
+            background: #f7f9fc;
+            color: #2d3436;
+        }
+        #quiz-container input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 25px;
+            border: 2px solid #dfe6e9;
+            border-radius: 12px;
+            font-size: 1.1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        #quiz-container input[type="text"]:focus {
+            border-color: #6c5ce7;
+            box-shadow: 0 0 8px rgba(108, 92, 231, 0.3);
+            outline: none;
         }
         .question {
-            animation: fadeIn 0.5s ease-in;
+            animation: slideIn 0.7s ease-out;
+            margin-bottom: 25px;
+        }
+        .question h3 {
+            color: #2d3436;
+            font-size: 1.6em;
             margin-bottom: 20px;
         }
         .options label {
             display: block;
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #ecf0f1;
-            border-radius: 5px;
+            margin: 12px 0;
+            padding: 18px;
+            background: #f1f2f6;
+            border-radius: 15px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            position: relative;
         }
         .options label:hover {
-            background-color: #dfe6e9;
+            background: #a29bfe;
+            color: white;
+            transform: scale(1.03);
         }
-        input[type="radio"] {
-            margin-right: 10px;
+        .options input[type="radio"] {
+            margin-right: 12px;
+            accent-color: #6c5ce7;
+            transform: scale(1.2);
         }
         button {
-            background-color: #3498db;
+            background: linear-gradient(45deg, #6c5ce7, #e84393);
             color: white;
-            padding: 10px 20px;
+            padding: 15px 35px;
             border: none;
-            border-radius: 5px;
+            border-radius: 15px;
+            font-size: 1.2em;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 25px auto 0;
         }
         button:hover {
-            background-color: #2980b9;
+            transform: scale(1.08);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
         button:disabled {
-            background-color: #95a5a6;
+            background: #b2bec3;
             cursor: not-allowed;
+            transform: none;
         }
         #score-container {
             text-align: center;
             display: none;
+            animation: zoomIn 0.6s ease-out;
+        }
+        #score-container h2 {
+            color: #2d3436;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        #score-container p {
+            font-size: 1.8em;
+            color: #e84393;
+            margin-bottom: 25px;
+        }
+        #wrong-answers {
+            margin-top: 30px;
+            text-align: left;
+        }
+        #wrong-answers h3 {
+            color: #2d3436;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #wrong-answers-list {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        #wrong-answers-list.show {
+            max-height: 1000px; /* Adjust based on content */
+        }
+        .wrong-answer {
+            background: #f8e1e1;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            animation: fadeIn 0.5s ease-out;
+            font-size: 1em;
+        }
+        .wrong-answer .correct {
+            color: #2ecc71;
+            font-weight: 600;
+        }
+        .wrong-answer .incorrect {
+            color: #e74c3c;
+            font-weight: 600;
         }
         .shake {
-            animation: shake 0.5s;
+            animation: shake 0.7s ease-in-out, flashRed 0.7s;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px) scale(0.95); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.85); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-15px); }
+            40%, 80% { transform: translateX(15px); }
+        }
+        @keyframes flashRed {
+            0%, 100% { background: rgba(255, 255, 255, 0.95); }
+            50% { background: rgba(231, 76, 60, 0.2); }
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-10px); }
-            40%, 80% { transform: translateX(10px); }
+        @media (max-width: 600px) {
+            h1 { font-size: 2.2em; }
+            #results-table, #quiz-container, #score-container {
+                padding: 25px;
+            }
+            .question h3 { font-size: 1.4em; }
+            .options label { font-size: 1em; padding: 12px; }
+            button { padding: 12px 25px; font-size: 1.1em; }
         }
     </style>
 </head>
 <body>
-    <h1>Cuestionario de Histología: Texto y Atlas</h1>
+    <h1>Cuestionario de Histología: Texto y Atlas (Ross, 9ª Ed.)</h1>
     <div id="results-table">
-        <h2>Resultados anteriores</h2>
+        <h2>Resultados Anteriores</h2>
         <table>
             <thead>
                 <tr>
@@ -113,48 +238,73 @@
         <button id="next-btn" disabled>Siguiente</button>
     </div>
     <div id="score-container">
-        <h2>¡Cuestionario completado!</h2>
+        <h2>¡Cuestionario Completado!</h2>
         <p id="score-text"></p>
-        <button onclick="location.reload()">Volver a intentar</button>
+        <div id="wrong-answers">
+            <h3 onclick="toggleWrongAnswers()">Respuestas Incorrectas <span id="toggle-icon">▼</span></h3>
+            <div id="wrong-answers-list"></div>
+        </div>
+        <button onclick="location.reload()">Volver a Intentar</button>
     </div>
 
     <script>
         const questions = [
-            { question: "¿Qué tipo de tejido epitelial cubre las superficies externas del cuerpo?", options: ["Epitelio escamoso simple", "Epitelio cúbico simple", "Epitelio escamoso estratificado", "Epitelio columnar pseudoestratificado"], answer: "Epitelio escamoso estratificado" },
-            { question: "¿Cuál es la función principal del tejido conjuntivo?", options: ["Cubrir superficies", "Soportar y conectar estructuras", "Transmitir impulsos", "Contraer músculos"], answer: "Soportar y conectar estructuras" },
-            { question: "¿Qué célula es responsable de producir fibras colágenas en el tejido conjuntivo?", options: ["Fibroblasto", "Macrófago", "Mastocito", "Plasmocito"], answer: "Fibroblasto" },
-            { question: "¿Qué tipo de cartílago se encuentra en los discos intervertebrales?", options: ["Cartílago hialino", "Cartílago elástico", "Fibrocartílago", "Cartílago calcificado"], answer: "Fibrocartílago" },
-            { question: "¿Cuál es la unidad funcional del tejido óseo?", options: ["Osteona", "Canalículo", "Lámina", "Osteocito"], answer: "Osteona" },
-            { question: "¿Qué tipo de tejido adiposo almacena energía principalmente?", options: ["Tejido adiposo blanco", "Tejido adiposo pardo", "Tejido adiposo reticular", "Tejido adiposo mucoso"], answer: "Tejido adiposo blanco" },
-            { question: "¿Qué célula sanguínea transporta oxígeno?", options: ["Leucocito", "Plaqueta", "Eritrocito", "Linfocito"], answer: "Eritrocito" },
-            { question: "¿Qué tipo de músculo es estriado y de control voluntario?", options: ["Músculo liso", "Músculo esquelético", "Músculo cardíaco", "Músculo visceral"], answer: "Músculo esquelético" },
-            { question: "¿Qué estructura neuronal transmite impulsos hacia el cuerpo celular?", options: ["Axón", "Dendrita", "Nodo de Ranvier", "Sinapsis"], answer: "Dendrita" },
-            { question: "¿Qué tejido forma la capa interna de los vasos sanguíneos?", options: ["Tejido muscular", "Tejido epitelial", "Tejido conjuntivo", "Tejido nervioso"], answer: "Tejido epitelial" },
-            { question: "¿Qué célula produce anticuerpos en el sistema inmunitario?", options: ["Macrófago", "Linfocito B", "Linfocito T", "Neutrófilo"], answer: "Linfocito B" },
-            { question: "¿Qué tipo de glándula vierte sus secreciones directamente al torrente sanguíneo?", options: ["Glándula exocrina", "Glándula endocrina", "Glándula mixta", "Glándula apocrina"], answer: "Glándula endocrina" },
-            { question: "¿Qué tejido conecta los músculos a los huesos?", options: ["Ligamento", "Tendón", "Cartílago", "Fascia"], answer: "Tendón" },
-            { question: "¿Qué componente del citoplasma almacena glucógeno?", options: ["Mitocondria", "Lisosoma", "Ribosoma", "Citosol"], answer: "Citosol" },
-            { question: "¿Qué organelo celular es responsable de la síntesis de proteínas?", options: ["Núcleo", "Mitocondria", "Ribosoma", "Lisosoma"], answer: "Ribosoma" },
-            { question: "¿Qué tipo de unión celular permite el paso de iones entre células adyacentes?", options: ["Unión oclusiva", "Unión adherente", "Unión de hendidura", "Desmosoma"], answer: "Unión de hendidura" },
-            { question: "¿Qué tejido epitelial se encuentra en los alvéolos pulmonares?", options: ["Epitelio escamoso simple", "Epitelio cúbico simple", "Epitelio columnar simple", "Epitelio escamoso estratificado"], answer: "Epitelio escamoso simple" },
-            { question: "¿Qué sustancia forma la matriz del cartílago hialino?", options: ["Colágeno tipo I", "Colágeno tipo II", "Elastina", "Queratina"], answer: "Colágeno tipo II" },
-            { question: "¿Qué célula ósea reabsorbe hueso?", options: ["Osteoblasto", "Osteocito", "Osteoclasta", "Condrocito"], answer: "Osteoclasta" },
-            { question: "¿Qué tipo de músculo tiene discos intercalados?", options: ["Músculo liso", "Músculo esquelético", "Músculo cardíaco", "Músculo estriado"], answer: "Músculo cardíaco" },
-            { question: "¿Qué estructura del sistema nervioso periférico contiene cuerpos celulares?", options: ["Nervio", "Ganglio", "Plexo", "Fascículo"], answer: "Ganglio" },
-            { question: "¿Qué célula del sistema digestivo secreta ácido clorhídrico?", options: ["Célula parietal", "Célula principal", "Célula mucosa", "Célula enteroendocrina"], answer: "Célula parietal" },
-            { question: "¿Qué tejido forma la dermis de la piel?", options: ["Tejido epitelial", "Tejido conjuntivo denso", "Tejido muscular liso", "Tejido nervioso"], answer: "Tejido conjuntivo denso" },
-            { question: "¿Qué tipo de glándula sudorípara produce un sudor viscoso?", options: ["Glándula ecrina", "Glándula apocrina", "Glándula sebácea", "Glándula mucosa"], answer: "Glándula apocrina" },
-            { question: "¿Qué célula del sistema respiratorio produce moco?", options: ["Célula caliciforme", "Célula ciliada", "Célula basal", "Célula serosa"], answer: "Célula caliciforme" },
-            { question: "¿Qué estructura renal filtra la sangre?", options: ["Túbulo contorneado", "Glomérulo", "Cápsula de Bowman", "Asa de Henle"], answer: "Glomérulo" },
-            { question: "¿Qué hormona produce la glándula tiroides?", options: ["Insulina", "Tiroxina", "Adrenalina", "Prolactina"], answer: "Tiroxina" },
-            { question: "¿Qué tejido forma los túbulos seminíferos?", options: ["Tejido epitelial", "Tejido conjuntivo", "Tejido muscular", "Tejido nervioso"], answer: "Tejido epitelial" },
-            { question: "¿Qué célula del ojo detecta la luz?", options: ["Célula amacrina", "Célula bipolar", "Fotoreceptor", "Célula ganglionar"], answer: "Fotoreceptor" },
-            { question: "¿Qué estructura del oído contiene las células ciliadas?", options: ["Canal semicircular", "Cóclea", "Vestíbulo", "Tímpano"], answer: "Cóclea" }
+            { question: "¿Qué técnica de tinción es más común para observar tejidos en histología?", options: ["Hematoxilina-Eosina", "Tricrómico de Masson", "PAS", "Sudán III"], answer: "Hematoxilina-Eosina" },
+            { question: "¿Qué organelo celular contiene enzimas hidrolíticas?", options: ["Mitocondria", "Lisosoma", "Ribosoma", "Peroxisoma"], answer: "Lisosoma" },
+            { question: "¿Qué estructura nuclear regula el paso de moléculas?", options: ["Membrana nuclear", "Nucleolo", "Poros nucleares", "Cromatina"], answer: "Poros nucleares" },
+            { question: "¿Qué tejido se caracteriza por una matriz extracelular abundante?", options: ["Tejido epitelial", "Tejido conjuntivo", "Tejido muscular", "Tejido nervioso"], answer: "Tejido conjuntivo" },
+            { question: "¿Qué tipo de epitelio se encuentra en los túbulos renales?", options: ["Epitelio escamoso simple", "Epitelio cúbico simple", "Epitelio columnar simple", "Epitelio de transición"], answer: "Epitelio cúbico simple" },
+            { question: "¿Qué célula del tejido conjuntivo produce histamina?", options: ["Fibroblasto", "Macrófago", "Mastocito", "Plasmocito"], answer: "Mastocito" },
+            { question: "¿Qué tipo de cartílago forma la tráquea?", options: ["Cartílago hialino", "Cartílago elástico", "Fibrocartílago", "Cartílago calcificado"], answer: "Cartílago hialino" },
+            { question: "¿Qué célula ósea secreta matriz ósea?", options: ["Osteoblasto", "Osteocito", "Osteoclasta", "Condrocito"], answer: "Osteoblasto" },
+            { question: "¿Qué tipo de tejido adiposo es rico en mitocondrias?", options: ["Tejido adiposo blanco", "Tejido adiposo pardo", "Tejido adiposo laxo", "Tejido adiposo denso"], answer: "Tejido adiposo pardo" },
+            { question: "¿Qué célula sanguínea carece de núcleo?", options: ["Leucocito", "Eritrocito", "Linfocito", "Neutrófilo"], answer: "Eritrocito" },
+            { question: "¿Qué tipo de músculo contiene discos intercalados?", options: ["Músculo liso", "Músculo esquelético", "Músculo cardíaco", "Músculo visceral"], answer: "Músculo cardíaco" },
+            { question: "¿Qué célula nerviosa forma la vaina de mielina en el SNC?", options: ["Célula de Schwann", "Oligodendrocito", "Astroglia", "Microglia"], answer: "Oligodendrocito" },
+            { question: "¿Qué vaso sanguíneo tiene una sola capa de endotelio?", options: ["Arteria", "Vena", "Capilar", "Arteriolas"], answer: "Capilar" },
+            { question: "¿Qué célula del sistema inmunitario presenta antígenos?", options: ["Linfocito B", "Célula dendrítica", "Linfocito T", "Neutrófilo"], answer: "Célula dendrítica" },
+            { question: "¿Qué capa de la piel contiene queratina?", options: ["Epidermis", "Dermis", "Hipodermis", "Capa basal"], answer: "Epidermis" },
+            { question: "¿Qué célula de la mucosa bucal produce moco?", options: ["Célula caliciforme", "Célula parietal", "Célula principal", "Célula serosa"], answer: "Célula caliciforme" },
+            { question: "¿Qué parte del tubo digestivo tiene vellosidades?", options: ["Esófago", "Estómago", "Intestino delgado", "Colon"], answer: "Intestino delgado" },
+            { question: "¿Qué célula del hígado elimina toxinas?", options: ["Hepatocito", "Célula de Kupffer", "Célula de Ito", "Célula endotelial"], answer: "Hepatocito" },
+            { question: "¿Qué estructura respiratoria contiene alvéolos?", options: ["Tráquea", "Bronquios", "Bronquiolos", "Saco alveolar"], answer: "Saco alveolar" },
+            { question: "¿Qué célula renal filtra el plasma?", options: ["Podocito", "Célula mesangial", "Célula juxtaglomerular", "Célula parietal"], answer: "Podocito" },
+            { question: "¿Qué glándula endocrina regula el calcio?", options: ["Tiroides", "Paratiroides", "Suprarrenal", "Hipófisis"], answer: "Paratiroides" },
+            { question: "¿Qué célula del testículo produce testosterona?", options: ["Célula de Sertoli", "Célula de Leydig", "Espermatocito", "Espermátida"], answer: "Célula de Leydig" },
+            { question: "¿Qué tejido forma el cuerpo lúteo?", options: ["Tejido epitelial", "Tejido conjuntivo", "Tejido endocrino", "Tejido muscular"], answer: "Tejido endocrino" },
+            { question: "¿Qué célula del ojo detecta colores?", options: ["Célula bipolar", "Célula ganglionar", "Cono", "Bastón"], answer: "Cono" },
+            { question: "¿Qué estructura auditiva contiene el órgano de Corti?", options: ["Canal semicircular", "Cóclea", "Vestíbulo", "Tímpano"], answer: "Cóclea" },
+            { question: "¿Qué técnica histológica usa anticuerpos?", options: ["Tinción tricrómica", "Inmunohistoquímica", "Hematoxilina-Eosina", "Tinción de plata"], answer: "Inmunohistoquímica" },
+            { question: "¿Qué organelo sintetiza lípidos?", options: ["Retículo endoplásmico liso", "Retículo endoplásmico rugoso", "Aparato de Golgi", "Mitocondria"], answer: "Retículo endoplásmico liso" },
+            { question: "¿Qué estructura nuclear contiene ADN condensado?", options: ["Nucleolo", "Cromatina", "Poros nucleares", "Lamina nuclear"], answer: "Cromatina" },
+            { question: "¿Qué tejido conecta músculo a hueso?", options: ["Ligamento", "Tendón", "Cartílago", "Fascia"], answer: "Tendón" },
+            { question: "¿Qué tipo de epitelio forma las glándulas sudoríparas?", options: ["Epitelio escamoso", "Epitelio cúbico estratificado", "Epitelio columnar", "Epitelio de transición"], answer: "Epitelio cúbico estratificado" },
+            { question: "¿Qué célula del tejido conjuntivo fagocita patógenos?", options: ["Fibroblasto", "Macrófago", "Mastocito", "Adipocito"], answer: "Macrófago" },
+            { question: "¿Qué tipo de cartílago soporta cargas compresivas?", options: ["Cartílago hialino", "Cartílago elástico", "Fibrocartílago", "Cartílago articular"], answer: "Fibrocartílago" },
+            { question: "¿Qué estructura ósea contiene osteocitos?", options: ["Canal de Havers", "Lacuna", "Canalículo", "Lámina"], answer: "Lacuna" },
+            { question: "¿Qué célula adiposa almacena lípidos?", options: ["Adipocito", "Fibroblasto", "Macrófago", "Mastocito"], answer: "Adipocito" },
+            { question: "¿Qué célula sanguínea inicia la coagulación?", options: ["Eritrocito", "Leucocito", "Plaqueta", "Linfocito"], answer: "Plaqueta" },
+            { question: "¿Qué tipo de músculo es multinucleado?", options: ["Músculo liso", "Músculo esquelético", "Músculo cardíaco", "Músculo visceral"], answer: "Músculo esquelético" },
+            { question: "¿Qué célula nerviosa elimina desechos?", options: ["Astroglia", "Microglia", "Oligodendrocito", "Célula ependimaria"], answer: "Microglia" },
+            { question: "¿Qué vaso sanguíneo regula el flujo?", options: ["Arteria", "Arteriola", "Capilar", "Vena"], answer: "Arteriola" },
+            { question: "¿Qué célula linfática produce anticuerpos?", options: ["Linfocito B", "Linfocito T", "Célula NK", "Macrófago"], answer: "Linfocito B" },
+            { question: "¿Qué capa de la piel contiene melanocitos?", options: ["Estrato córneo", "Estrato basal", "Dermis", "Hipodermis"], answer: "Estrato basal" },
+            { question: "¿Qué célula del estómago secreta ácido?", options: ["Célula parietal", "Célula principal", "Célula caliciforme", "Célula enteroendocrina"], answer: "Célula parietal" },
+            { question: "¿Qué estructura digestiva absorbe nutrientes?", options: ["Vellosidad", "Cripta de Lieberkühn", "Placa de Peyer", "Mucosa"], answer: "Vellosidad" },
+            { question: "¿Qué célula del páncreas produce insulina?", options: ["Célula alfa", "Célula beta", "Célula delta", "Célula PP"], answer: "Célula beta" },
+            { question: "¿Qué estructura respiratoria contiene cilios?", options: ["Alvéolo", "Bronquiolo terminal", "Tráquea", "Saco alveolar"], answer: "Tráquea" },
+            { question: "¿Qué célula renal secreta renina?", options: ["Podocito", "Célula mesangial", "Célula juxtaglomerular", "Célula parietal"], answer: "Célula juxtaglomerular" },
+            { question: "¿Qué glándula endocrina regula el metabolismo?", options: ["Tiroides", "Paratiroides", "Suprarrenal", "Pineal"], answer: "Tiroides" },
+            { question: "¿Qué célula ovárica produce estrógenos?", options: ["Célula de la granulosa", "Célula de la teca", "Oocito", "Célula luteínica"], answer: "Célula de la granulosa" },
+            { question: "¿Qué tejido forma la retina?", options: ["Tejido epitelial", "Tejido nervioso", "Tejido conjuntivo", "Tejido muscular"], answer: "Tejido nervioso" },
+            { question: "¿Qué estructura auditiva detecta vibraciones?", options: ["Membrana basilar", "Tímpano", "Canal semicircular", "Vestíbulo"], answer: "Membrana basilar" },
+            { question: "¿Qué técnica histológica usa electrones?", options: ["Microscopía óptica", "Microscopía electrónica", "Inmunohistoquímica", "Tinción PAS"], answer: "Microscopía electrónica" }
         ];
 
         let currentQuestion = 0;
         let score = 0;
         let selectedAnswer = null;
+        let wrongAnswers = [];
 
         const questionContainer = document.getElementById('question-container');
         const nextBtn = document.getElementById('next-btn');
@@ -163,26 +313,27 @@
         const scoreText = document.getElementById('score-text');
         const userNameInput = document.getElementById('user-name');
         const resultsBody = document.getElementById('results-body');
+        const wrongAnswersList = document.getElementById('wrong-answers-list');
 
-        // Cargar resultados previos
+        // Load previous results
         function loadResults() {
             const results = JSON.parse(localStorage.getItem('quizResults')) || [];
             resultsBody.innerHTML = '';
             results.forEach(result => {
                 const row = document.createElement('tr');
-                row.innerHTML = `<td>${result.name}</td><td>${result.score}/30</td>`;
+                row.innerHTML = `<td>${result.name}</td><td>${result.score}/50</td>`;
                 resultsBody.appendChild(row);
             });
         }
 
-        // Guardar resultado
+        // Save result
         function saveResult(name, score) {
             const results = JSON.parse(localStorage.getItem('quizResults')) || [];
             results.push({ name, score });
             localStorage.setItem('quizResults', JSON.stringify(results));
         }
 
-        // Mostrar pregunta
+        // Show question
         function showQuestion() {
             const q = questions[currentQuestion];
             questionContainer.innerHTML = `
@@ -201,23 +352,53 @@
             nextBtn.disabled = true;
         }
 
-        // Seleccionar respuesta
+        // Select answer
         function selectAnswer(input) {
             selectedAnswer = input.value;
             nextBtn.disabled = false;
             const labels = document.querySelectorAll('.options label');
-            labels.forEach(label => label.style.backgroundColor = '#ecf0f1');
-            input.parentElement.style.backgroundColor = '#b2dfdb';
+            labels.forEach(label => label.style.backgroundColor = '#f1f2f6');
+            input.parentElement.style.backgroundColor = '#55efc4';
         }
 
-        // Siguiente pregunta
+        // Toggle wrong answers section
+        function toggleWrongAnswers() {
+            const list = wrongAnswersList;
+            const icon = document.getElementById('toggle-icon');
+            if (list.classList.contains('show')) {
+                list.classList.remove('show');
+                icon.textContent = '▼';
+            } else {
+                list.classList.add('show');
+                icon.textContent = '▲';
+            }
+        }
+
+        // Show wrong answers
+        function showWrongAnswers() {
+            wrongAnswersList.innerHTML = wrongAnswers.length > 0 ? wrongAnswers.map((wa, index) => `
+                <div class="wrong-answer">
+                    <p><strong>Pregunta ${wa.index + 1}:</strong> ${wa.question}</p>
+                    <p><span class="incorrect">✗ Tu respuesta:</span> ${wa.selected}</p>
+                    <p><span class="correct">✓ Respuesta correcta:</span> ${wa.correct}</p>
+                </div>
+            `).join('') : '<p>¡Felicidades! No tuviste respuestas incorrectas.</p>';
+        }
+
+        // Next question
         nextBtn.addEventListener('click', () => {
             if (selectedAnswer) {
                 if (selectedAnswer === questions[currentQuestion].answer) {
                     score++;
                 } else {
+                    wrongAnswers.push({
+                        index: currentQuestion,
+                        question: questions[currentQuestion].question,
+                        selected: selectedAnswer,
+                        correct: questions[currentQuestion].answer
+                    });
                     questionContainer.classList.add('shake');
-                    setTimeout(() => questionContainer.classList.remove('shake'), 500);
+                    setTimeout(() => questionContainer.classList.remove('shake'), 700);
                 }
                 currentQuestion++;
                 selectedAnswer = null;
@@ -228,12 +409,13 @@
                     saveResult(name, score);
                     quizContainer.style.display = 'none';
                     scoreContainer.style.display = 'block';
-                    scoreText.textContent = `${name}, tu puntaje es: ${score}/30`;
+                    scoreText.textContent = `${name}, tu puntaje es: ${score}/50`;
+                    showWrongAnswers();
                 }
             }
         });
 
-        // Inicializar
+        // Initialize
         loadResults();
         showQuestion();
     </script>

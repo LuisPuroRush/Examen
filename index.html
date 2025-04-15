@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario de Histología: Texto y Atlas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        #results-table, #quiz-container, #score-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+        #results-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        #results-table th, #results-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        #results-table th {
+            background-color: #3498db;
+            color: white;
+        }
+        .question {
+            animation: fadeIn 0.5s ease-in;
+            margin-bottom: 20px;
+        }
+        .options label {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .options label:hover {
+            background-color: #dfe6e9;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        #score-container {
+            text-align: center;
+            display: none;
+        }
+        .shake {
+            animation: shake 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Cuestionario de Histología: Texto y Atlas</h1>
+    <div id="results-table">
+        <h2>Resultados anteriores</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Puntaje</th>
+                </tr>
+            </thead>
+            <tbody id="results-body"></tbody>
+        </table>
+    </div>
+    <div id="quiz-container">
+        <input type="text" id="user-name" placeholder="Ingresa tu nombre" required>
+        <div id="question-container"></div>
+        <button id="next-btn" disabled>Siguiente</button>
+    </div>
+    <div id="score-container">
+        <h2>¡Cuestionario completado!</h2>
+        <p id="score-text"></p>
+        <button onclick="location.reload()">Volver a intentar</button>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "¿Qué tipo de tejido epitelial cubre las superficies externas del cuerpo?", options: ["Epitelio escamoso simple", "Epitelio cúbico simple", "Epitelio escamoso estratificado", "Epitelio columnar pseudoestratificado"], answer: "Epitelio escamoso estratificado" },
+            { question: "¿Cuál es la función principal del tejido conjuntivo?", options: ["Cubrir superficies", "Soportar y conectar estructuras", "Transmitir impulsos", "Contraer músculos"], answer: "Soportar y conectar estructuras" },
+            { question: "¿Qué célula es responsable de producir fibras colágenas en el tejido conjuntivo?", options: ["Fibroblasto", "Macrófago", "Mastocito", "Plasmocito"], answer: "Fibroblasto" },
+            { question: "¿Qué tipo de cartílago se encuentra en los discos intervertebrales?", options: ["Cartílago hialino", "Cartílago elástico", "Fibrocartílago", "Cartílago calcificado"], answer: "Fibrocartílago" },
+            { question: "¿Cuál es la unidad funcional del tejido óseo?", options: ["Osteona", "Canalículo", "Lámina", "Osteocito"], answer: "Osteona" },
+            { question: "¿Qué tipo de tejido adiposo almacena energía principalmente?", options: ["Tejido adiposo blanco", "Tejido adiposo pardo", "Tejido adiposo reticular", "Tejido adiposo mucoso"], answer: "Tejido adiposo blanco" },
+            { question: "¿Qué célula sanguínea transporta oxígeno?", options: ["Leucocito", "Plaqueta", "Eritrocito", "Linfocito"], answer: "Eritrocito" },
+            { question: "¿Qué tipo de músculo es estriado y de control voluntario?", options: ["Músculo liso", "Músculo esquelético", "Músculo cardíaco", "Músculo visceral"], answer: "Músculo esquelético" },
+            { question: "¿Qué estructura neuronal transmite impulsos hacia el cuerpo celular?", options: ["Axón", "Dendrita", "Nodo de Ranvier", "Sinapsis"], answer: "Dendrita" },
+            { question: "¿Qué tejido forma la capa interna de los vasos sanguíneos?", options: ["Tejido muscular", "Tejido epitelial", "Tejido conjuntivo", "Tejido nervioso"], answer: "Tejido epitelial" },
+            { question: "¿Qué célula produce anticuerpos en el sistema inmunitario?", options: ["Macrófago", "Linfocito B", "Linfocito T", "Neutrófilo"], answer: "Linfocito B" },
+            { question: "¿Qué tipo de glándula vierte sus secreciones directamente al torrente sanguíneo?", options: ["Glándula exocrina", "Glándula endocrina", "Glándula mixta", "Glándula apocrina"], answer: "Glándula endocrina" },
+            { question: "¿Qué tejido conecta los músculos a los huesos?", options: ["Ligamento", "Tendón", "Cartílago", "Fascia"], answer: "Tendón" },
+            { question: "¿Qué componente del citoplasma almacena glucógeno?", options: ["Mitocondria", "Lisosoma", "Ribosoma", "Citosol"], answer: "Citosol" },
+            { question: "¿Qué organelo celular es responsable de la síntesis de proteínas?", options: ["Núcleo", "Mitocondria", "Ribosoma", "Lisosoma"], answer: "Ribosoma" },
+            { question: "¿Qué tipo de unión celular permite el paso de iones entre células adyacentes?", options: ["Unión oclusiva", "Unión adherente", "Unión de hendidura", "Desmosoma"], answer: "Unión de hendidura" },
+            { question: "¿Qué tejido epitelial se encuentra en los alvéolos pulmonares?", options: ["Epitelio escamoso simple", "Epitelio cúbico simple", "Epitelio columnar simple", "Epitelio escamoso estratificado"], answer: "Epitelio escamoso simple" },
+            { question: "¿Qué sustancia forma la matriz del cartílago hialino?", options: ["Colágeno tipo I", "Colágeno tipo II", "Elastina", "Queratina"], answer: "Colágeno tipo II" },
+            { question: "¿Qué célula ósea reabsorbe hueso?", options: ["Osteoblasto", "Osteocito", "Osteoclasta", "Condrocito"], answer: "Osteoclasta" },
+            { question: "¿Qué tipo de músculo tiene discos intercalados?", options: ["Músculo liso", "Músculo esquelético", "Músculo cardíaco", "Músculo estriado"], answer: "Músculo cardíaco" },
+            { question: "¿Qué estructura del sistema nervioso periférico contiene cuerpos celulares?", options: ["Nervio", "Ganglio", "Plexo", "Fascículo"], answer: "Ganglio" },
+            { question: "¿Qué célula del sistema digestivo secreta ácido clorhídrico?", options: ["Célula parietal", "Célula principal", "Célula mucosa", "Célula enteroendocrina"], answer: "Célula parietal" },
+            { question: "¿Qué tejido forma la dermis de la piel?", options: ["Tejido epitelial", "Tejido conjuntivo denso", "Tejido muscular liso", "Tejido nervioso"], answer: "Tejido conjuntivo denso" },
+            { question: "¿Qué tipo de glándula sudorípara produce un sudor viscoso?", options: ["Glándula ecrina", "Glándula apocrina", "Glándula sebácea", "Glándula mucosa"], answer: "Glándula apocrina" },
+            { question: "¿Qué célula del sistema respiratorio produce moco?", options: ["Célula caliciforme", "Célula ciliada", "Célula basal", "Célula serosa"], answer: "Célula caliciforme" },
+            { question: "¿Qué estructura renal filtra la sangre?", options: ["Túbulo contorneado", "Glomérulo", "Cápsula de Bowman", "Asa de Henle"], answer: "Glomérulo" },
+            { question: "¿Qué hormona produce la glándula tiroides?", options: ["Insulina", "Tiroxina", "Adrenalina", "Prolactina"], answer: "Tiroxina" },
+            { question: "¿Qué tejido forma los túbulos seminíferos?", options: ["Tejido epitelial", "Tejido conjuntivo", "Tejido muscular", "Tejido nervioso"], answer: "Tejido epitelial" },
+            { question: "¿Qué célula del ojo detecta la luz?", options: ["Célula amacrina", "Célula bipolar", "Fotoreceptor", "Célula ganglionar"], answer: "Fotoreceptor" },
+            { question: "¿Qué estructura del oído contiene las células ciliadas?", options: ["Canal semicircular", "Cóclea", "Vestíbulo", "Tímpano"], answer: "Cóclea" }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+
+        const questionContainer = document.getElementById('question-container');
+        const nextBtn = document.getElementById('next-btn');
+        const quizContainer = document.getElementById('quiz-container');
+        const scoreContainer = document.getElementById('score-container');
+        const scoreText = document.getElementById('score-text');
+        const userNameInput = document.getElementById('user-name');
+        const resultsBody = document.getElementById('results-body');
+
+        // Cargar resultados previos
+        function loadResults() {
+            const results = JSON.parse(localStorage.getItem('quizResults')) || [];
+            resultsBody.innerHTML = '';
+            results.forEach(result => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${result.name}</td><td>${result.score}/30</td>`;
+                resultsBody.appendChild(row);
+            });
+        }
+
+        // Guardar resultado
+        function saveResult(name, score) {
+            const results = JSON.parse(localStorage.getItem('quizResults')) || [];
+            results.push({ name, score });
+            localStorage.setItem('quizResults', JSON.stringify(results));
+        }
+
+        // Mostrar pregunta
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            questionContainer.innerHTML = `
+                <div class="question">
+                    <h3>Pregunta ${currentQuestion + 1}: ${q.question}</h3>
+                    <div class="options">
+                        ${q.options.map((option, index) => `
+                            <label>
+                                <input type="radio" name="option" value="${option}" onchange="selectAnswer(this)">
+                                ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            nextBtn.disabled = true;
+        }
+
+        // Seleccionar respuesta
+        function selectAnswer(input) {
+            selectedAnswer = input.value;
+            nextBtn.disabled = false;
+            const labels = document.querySelectorAll('.options label');
+            labels.forEach(label => label.style.backgroundColor = '#ecf0f1');
+            input.parentElement.style.backgroundColor = '#b2dfdb';
+        }
+
+        // Siguiente pregunta
+        nextBtn.addEventListener('click', () => {
+            if (selectedAnswer) {
+                if (selectedAnswer === questions[currentQuestion].answer) {
+                    score++;
+                } else {
+                    questionContainer.classList.add('shake');
+                    setTimeout(() => questionContainer.classList.remove('shake'), 500);
+                }
+                currentQuestion++;
+                selectedAnswer = null;
+                if (currentQuestion < questions.length) {
+                    showQuestion();
+                } else {
+                    const name = userNameInput.value.trim() || 'Anónimo';
+                    saveResult(name, score);
+                    quizContainer.style.display = 'none';
+                    scoreContainer.style.display = 'block';
+                    scoreText.textContent = `${name}, tu puntaje es: ${score}/30`;
+                }
+            }
+        });
+
+        // Inicializar
+        loadResults();
+        showQuestion();
+    </script>
+</body>
+</html>
